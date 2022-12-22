@@ -35,8 +35,10 @@ function App() {
   const [input, setInput] = useState("")
   const [todoList, setTodoList] = useState([])
   const [completedTaskCount, setCompletedTaskCount] = useState(0)
+  const [pendingTaskCount, setPendingTaskCount] = useState(0)
   
-  const handleClick = () => {
+  const handleClick = (e) => {
+    e.preventDefault();
     const id = todoList.length + 1;
     setTodoList((prev) => [
       ...prev,
@@ -48,24 +50,76 @@ function App() {
     ]);
     setInput('');
   }
+
+  const handleChange = (e) => {
+    console.log(e.id)
+    let listPending = todoList.map((task) => {
+      let itemPending = {};
+      if(task.id == e.id) {
+        if(task.complete) {
+          setPendingTaskCount(pendingTaskCount + 1);
+        } else {
+          setPendingTaskCount(pendingTaskCount - 1);
+        }
+        itemPending = {...task, complete: !task.complete};
+      } else itemPending = {...task}
+      return itemPending;
+    });
+    setPendingTaskCount(listPending)
+    setInput(e.value)
+  }
+
+  const handleComplete = (id) => {
+    let list = todoList.map((task) => {
+      let item = {};
+      if(task.id == id) {
+        if(!task.complete) {
+          setCompletedTaskCount(completedTaskCount + 1);
+        } else {
+          setCompletedTaskCount(completedTaskCount - 1);
+        }
+        item = {...task, complete: !task.complete};
+      } else item = {...task}
+      return item;
+    });
+    setTodoList(list);
+  };
   
   return (
     <Container>
       <div>
         <h2>Todo List</h2>
-        <Text value={input} onInput={(e) => setInput(e.target.value)}/>
-        <Button onClick={() => handleClick()}>Add</Button>
+        {/* <Text value={input} onInput={(e) => setInput(e.target.value)}/> */}
+        <Text value={input} onInput={(e) => handleChange(e.target)}/>
+        <Button onClick={(e) => handleClick(e)}>Add</Button>
         <Tasks>
           <TaskCount>
-            <b>Pending Tasks</b>
+            <b>Pending Tasks: </b>
+            {pendingTaskCount}
           </TaskCount>
           <TaskCount>
-            <b>Completed Task</b>
+            <b>Completed Task: </b>
+            {completedTaskCount}
           </TaskCount>
         </Tasks>
         <div>
           <ul>
-            {/* list items consisting of task will be listed here */}
+            {todoList.map((todo) => {
+              return (
+                <li
+                  key={todo.id}
+                  complete = {todo.complete}
+                  id = {todo.id}
+                  onClick= {()=> handleComplete(todo.id)}
+                  style={{
+                    listStyle: "none",
+                    textDecoration: todo.complete && "line-through",
+                  }}
+                  >
+                    {todo.task}
+                  </li>
+              );
+            })}
           </ul>
         </div>
         <Button>Clear</Button>
