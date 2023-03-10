@@ -37,6 +37,7 @@ function App() {
   const [completedTaskCount, setCompletedTaskCount] = useState(0)
   const [pendingTaskCount, setPendingTaskCount] = useState(0)
   
+  // adds task with id, input, and adds to counter
   const handleClick = (e) => {
     e.preventDefault();
     const id = todoList.length + 1;
@@ -45,39 +46,40 @@ function App() {
       {
         id: id,
         task: input, 
-        complete: false,
+        complete: completedTaskCount,
       },
     ]);
     setInput('');
   }
 
-  const handleChange = (e) => {
-    console.log(e.id)
-    let listPending = todoList.map((task) => {
-      let itemPending = {};
-      if(task.id == e.id) {
-        if(task.complete) {
-          setPendingTaskCount(pendingTaskCount + 1);
-        } else {
-          setPendingTaskCount(pendingTaskCount - 1);
-        }
-        itemPending = {...task, complete: !task.complete};
-      } else itemPending = {...task}
-      return itemPending;
-    });
-    setPendingTaskCount(listPending)
-    setInput(e.value)
-  }
+  // const handleChange = (e) => {
+  //   console.log(e.id)
+  //   let listPending = todoList.map((task) => {
+  //     let itemPending = {};
+  //     if(task.id == e.id) {
+  //       if(task.complete) {
+  //         setPendingTaskCount(pendingTaskCount + 1);
+  //       } else {
+  //         setPendingTaskCount(pendingTaskCount - 1);
+  //       }
+  //       itemPending = {...task, complete: !task.complete};
+  //     } else itemPending = {...task}
+  //     return itemPending;
+  //   });
+  //   setPendingTaskCount(listPending)
+  //   setInput(e.value)
+  // }
 
+  // Changes boolean to complete, and enables line through and delete
   const handleComplete = (id) => {
     let list = todoList.map((task) => {
       let item = {};
-      if(task.id == id) {
-        if(!task.complete) {
-          setCompletedTaskCount(completedTaskCount + 1);
-        } else {
-          setCompletedTaskCount(completedTaskCount - 1);
-        }
+      if(task.id === id) {
+        // if(!task.complete) {
+        //   setCompletedTaskCount(completedTaskCount + 1);
+        // } else {
+        //   setCompletedTaskCount(completedTaskCount - 1);
+        // }
         item = {...task, complete: !task.complete};
       } else item = {...task}
       return item;
@@ -90,9 +92,9 @@ function App() {
       <div>
         <h2>Todo List</h2>
         {/* <Text value={input} onInput={(e) => setInput(e.target.value)}/> */}
-        <Text value={input} onInput={(e) => handleChange(e.target)}/>
+        <Text value={input} onChange={(e) => setInput(e.target.value)}/>
         <Button onClick={(e) => handleClick(e)}>Add</Button>
-        <Tasks>
+        {/* <Tasks>
           <TaskCount>
             <b>Pending Tasks: </b>
             {pendingTaskCount}
@@ -101,15 +103,15 @@ function App() {
             <b>Completed Task: </b>
             {completedTaskCount}
           </TaskCount>
-        </Tasks>
+        </Tasks> */}
         <div>
           <ul>
             {todoList.map((todo) => {
               return (
                 <li
                   key={todo.id}
-                  complete = {todo.complete}
-                  id = {todo.id}
+                  // complete = {todo.complete}
+                  // id = {todo.id}
                   onClick= {()=> handleComplete(todo.id)}
                   style={{
                     listStyle: "none",
@@ -122,7 +124,14 @@ function App() {
             })}
           </ul>
         </div>
-        <Button>Clear</Button>
+        <Button
+          onClick={() => {
+            let filtered = todoList.filter(task => {
+              return !task.complete
+            })
+            setTodoList(filtered)
+          }}
+        >Clear</Button>
       </div>
     </Container>
   );
